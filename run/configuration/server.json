@@ -1,0 +1,21 @@
+{
+  "appId": "app1",
+  "serverId": "serverId1",
+  "network": {
+    "port": "9093",
+    "ip": "0.0.0.0",
+    "property": {
+      "nMailer": 12,
+      "nQueueMail": 8,
+      "nworker": 12,
+      "nboot": 12,
+      "timeout": 12000,
+      "configLoader": {
+        "className": "com.k.taskmanager.configloader.FileConfigStorage",
+        "parameters": {
+          "folder": "./configuration/thread"
+        }
+      }
+    }
+  }
+}

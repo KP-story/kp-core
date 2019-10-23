@@ -1,0 +1,7 @@
+{
+  "command": "changeStateThread",
+  "transId": "12",
+  "threadId": "12",
+  "timeout": "1000",
+  "action": 0
+}
