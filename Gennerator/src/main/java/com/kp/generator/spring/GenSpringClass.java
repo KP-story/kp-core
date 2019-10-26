@@ -225,7 +225,7 @@ public class GenSpringClass {
                     "@RequestMapping(\"/api\")\n" +
                     "public class " + controllerName + " extends BaseControler<" + tname + ", " + t.getPk() + ", " + tname + "Repository, Abstract" + tname + "Service> {\n" +
                     "    @CrossOrigin(origins = \"/**\")\n" +
-                    "    @RequestMapping(value = \"/" + WordUtils.uncapitalize(tname) + "s\", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
+                    "    @RequestMapping(value = \"/" + WordUtils.uncapitalize(tname) + "/list\", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
                     "    @ResponseBody\n" +
                     "    public ResponseMsg get" + tname + "s(Pageable pageable) throws Exception {\n" +
                     "        return findAll(pageable);\n" +
