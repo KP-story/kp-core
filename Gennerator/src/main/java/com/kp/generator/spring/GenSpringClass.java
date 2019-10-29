@@ -21,9 +21,9 @@ import java.util.Set;
 public class GenSpringClass {
 
 
-    public static void main(String[] args) throws Exception {
+    public static void gen(String pakageEntities,String basePath ) throws Exception {
 
-        Reflections reflections = new Reflections("com.telsoft.core.spring.report.entities");
+        Reflections reflections = new Reflections(pakageEntities);
         Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(Entity.class);
         List<MyEntity> myEntities = new LinkedList<>();
         for (Class<?> bd : annotated) {
@@ -48,8 +48,7 @@ public class GenSpringClass {
 
         }
 
-        String basePath = "com/telsoft/core/spring/report";
-        String
+         String
                 pathService = basePath + "/services",
                 pathSVImpl = basePath + "/services/impl",
                 pathSVAbs = basePath + "/services/abs",
@@ -66,7 +65,7 @@ public class GenSpringClass {
             test.createAbstract(myEntities, pathService, repo_path);
             test.createServiceImpl(myEntities, pathService);
             test.createController(myEntities, pathService, repo_path, pathController);
-//                test.createRepository(myEntities, repo_path);
+            test.createRepository(myEntities, repo_path);
         } catch (Exception e) {
             throw e;
         } finally {
@@ -82,7 +81,8 @@ public class GenSpringClass {
             String pakage = repo_path.replaceAll("/", ".");
             //Repository
             content = "package " + pakage +
-                    ";\n" +
+                    ";\n" +                            "\n\n\n\n   ////@Copyright by https://github.com/KP-story;\n" +
+
                     "import " + t.getFullName() + ";\n" +
                     "public interface " + repoName + " extends BaseRepo<" + tname + ", " + t.getPk() + "> {\n" +
                     "\n" +
@@ -105,14 +105,15 @@ public class GenSpringClass {
     }
 
     private void createService(List<MyEntity> entities, String repo_path) throws IOException {
-        String content;
+   String content;
         for (MyEntity t : entities) {
             String tname = t.getClassName();
             String fileName = tname + "Service";
             String pakage = repo_path.replaceAll("/", ".");
 
             content = "package " + pakage +
-                    ";\n" +
+                    ";\n" +                            "\n\n\n\n//@Copyright by https://github.com/KP-story;\n" +
+
                     "public interface " + fileName + " {\n" +
                     "}";
             File file = new File("./" + repo_path + "/" + fileName + ".java");
@@ -143,9 +144,10 @@ public class GenSpringClass {
                     "\n" +
                     "import " + t.getFullName() + " ;\n" +
                     "import " + repoPk + "." + t.getClassName() + "Repository;\n" +
-                    "import com.telsoft.core.spring.report.services.AbstractCRUDService;\n" +
+                    "import com.kp.core.spring.admin.services.AbstractCRUDService;\n" +
                     "import " + pakage + "." + fileName + ";\n" +
-                    "\n" +
+                    "\n" +                            "\n\n\n\n//@Copyright by https://github.com/KP-story;\n" +
+
                     "public abstract class " + fileNameAbs + " extends AbstractCRUDService<" + tname + ", " + t.getPk() + ", " + tname + "Repository> implements " + fileName + " {\n" +
                     "}";
 
@@ -180,6 +182,8 @@ public class GenSpringClass {
                     "import " + servicePakage + ".abs." + fileNameAbs + ";\n" +
                     "import org.springframework.stereotype.Service;\n" +
                     "\n" +
+                    "\n\n\n\n//@Copyright by https://github.com/KP-story;\n" +
+
                     "@Service\n" +
                     "public class " + fileImpl + " extends " + fileNameAbs + " {\n" +
                     "}";
@@ -204,6 +208,7 @@ public class GenSpringClass {
     private void createController(List<MyEntity> entities, String service_path, String repo_path, String pathController) throws IOException {
         String content;
         for (MyEntity t : entities) {
+
             String tname = t.getClassName();
             String controllerName = tname + "Controller";
             String packageControler = pathController.replaceAll("/", ".");
@@ -211,52 +216,72 @@ public class GenSpringClass {
             String pakageService = service_path.replaceAll("/", ".");
             content = "package " + packageControler +
                     ";\n" +
-                    "import com.telsoft.core.spring.report.controller.BaseControler;\n" +
+                    "import com.kp.core.spring.admin.controller.BaseControler;\n" +
                     "import " + t.getFullName() + ";\n" +
                     "import " + pakageRepo + "." + tname + "Repository;\n" +
                     "import " + pakageService + ".abs.Abstract" + tname + "Service;\n" +
-                    "import com.telsoft.core.spring.report.vo.ResponseMsg;\n" +
+                    "import com.kp.core.spring.admin.vo.ResponseMsg;\n" +
                     "import org.springframework.data.domain.Pageable;\n" +
                     "import org.springframework.http.MediaType;\n" +
+                    "import java.util.List;\n" +
+
                     "import org.springframework.web.bind.annotation.*;\n" +
                     "import javax.validation.Valid;\n" +
+                            "\n\n\n\n//@Copyright by https://github.com/KP-story;\n" +
+
                     "\n" +
                     "@RestController\n" +
-                    "@RequestMapping(\"/api\")\n" +
+                    "@RequestMapping(\"/api/"+ WordUtils.uncapitalize(tname) +"\")\n" +
                     "public class " + controllerName + " extends BaseControler<" + tname + ", " + t.getPk() + ", " + tname + "Repository, Abstract" + tname + "Service> {\n" +
                     "    @CrossOrigin(origins = \"/**\")\n" +
-                    "    @RequestMapping(value = \"/" + WordUtils.uncapitalize(tname) + "/list\", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
+                    "    @RequestMapping(value = \"/list\", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
                     "    @ResponseBody\n" +
                     "    public ResponseMsg get" + tname + "s(Pageable pageable) throws Exception {\n" +
                     "        return findAll(pageable);\n" +
                     "    }\n" +
                     "\n" +
                     "    @CrossOrigin(origins = \"/**\")\n" +
-                    "    @RequestMapping(value = \"/" + WordUtils.uncapitalize(tname) + "/{id}\", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
+                    "    @RequestMapping(value = \"/{id}\", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
                     "    @ResponseBody\n" +
                     "    public ResponseMsg getDetail" + tname + "(@PathVariable(\"id\") " + t.getPk() + " id) throws Exception {\n" +
                     "        return super.getById(id);\n" +
                     "    }" +
                     "\n" +
                     "    @CrossOrigin(origins = \"/**\")\n" +
-                    "    @RequestMapping(value = \"/" + WordUtils.uncapitalize(tname) + "\", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
+                    "    @RequestMapping(value = \"/\", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
                     "    @ResponseBody\n" +
                     "    public ResponseMsg add" + tname + "(@Valid @RequestBody " + tname + " " + WordUtils.uncapitalize(tname) + ") {\n" +
                     "        return create(" + WordUtils.uncapitalize(tname) + ");\n" +
                     "    }\n" +
                     "\n" +
                     "    @CrossOrigin(origins = \"/**\")\n" +
-                    "    @RequestMapping(value = \"/" + WordUtils.uncapitalize(tname) + "/{id}\", method = RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
+                    "    @RequestMapping(value = \"/{id}\", method = RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
                     "    @ResponseBody\n" +
                     "    public ResponseMsg update" + tname + "(@PathVariable(\"id\") " + t.getPk() + " id, @Valid @RequestBody " + tname + " " + WordUtils.uncapitalize(tname) + ") throws Exception {\n" +
                     "        return super.update(id, " + WordUtils.uncapitalize(tname) + ");\n" +
                     "    }" +
                     "\n" +
                     "    @CrossOrigin(origins = \"/**\")\n" +
-                    "    @RequestMapping(value = \"/" + WordUtils.uncapitalize(tname) + "/{id}\", method = RequestMethod.DELETE, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
+                    "    @RequestMapping(value = \"/{id}\", method = RequestMethod.DELETE, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
                     "    @ResponseBody\n" +
                     "    public ResponseMsg delete" + tname + "(@PathVariable(\"id\") " + t.getPk() + " id) {\n" +
                     "        return super.delete(id);\n" +
+                    "    }" +
+                    "\n" +
+
+                            "    @CrossOrigin(origins = \"/**\")\n" +
+                    "    @RequestMapping(value = \"/search\", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
+                    "    @ResponseBody\n" +
+                    "    public ResponseMsg search" + tname + "(Pageable pageable, " + tname + " " + WordUtils.uncapitalize(tname) +  ") throws Exception {\n" +
+                    "                return findByObject("+WordUtils.uncapitalize(tname) +",pageable);\n\n" +
+                    "    }" +
+                    "\n" +
+
+                            "    @CrossOrigin(origins = \"/**\")\n" +
+                    "    @RequestMapping(value = \"/multiple/delete\", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})\n" +
+                    "    @ResponseBody\n" +
+                    "    public ResponseMsg deleteMulti" + tname + "(@RequestBody List<"+tname+"> "+WordUtils.uncapitalize(tname)+"  )throws Exception {\n" +
+                    "                return deleteMultiInBatch("+WordUtils.uncapitalize(tname)+");\n\n" +
                     "    }" +
                     "\n" +
                     "    @Override\n" +
