@@ -7,4 +7,4 @@ There is consist of  some child project .
 3. KPCommon (Some class helper )
 4. KPCache (wrap cache )
 5. KPPojoCustom 
-6. KPTEST (For Example and tester  )
+6. KPTEST (For Example and test )
